@@ -39,15 +39,18 @@ RUN if [ -n "${TRIVY_ARCH}" ]; then \
     fi
 
 # Install goimports
-RUN GOPROXY=https://goproxy.cn,direct go install golang.org/x/tools/cmd/goimports@gopls/v0.11.0
 RUN go env -w GOPROXY=https://goproxy.cn,direct
+# https://github.com/golang/go/issues/32955
+# RUN GOPROXY=direct go install golang.org/x/tools/cmd/goimports@gopls/v0.11.0
+RUN go install golang.org/x/tools/cmd/goimports@latest
 
 # Cleanup
 RUN rm -rf /go/src /go/pkg
 
 # Install golangci-lint for amd64
 RUN if [ "$(go env GOARCH)" = "amd64" ]; then \
-    curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
+    #curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
+    curl -sL https://gitee.com/mirrors/GolangCI-Lint/blob/master/install.sh | sh -s v1.55.2;  \
     fi
 
 # Set SELINUX environment variable

@@ -8,6 +8,11 @@ GIT_TAG=$DRONE_TAG
 TREE_STATE=clean
 COMMIT=$DRONE_COMMIT
 
+# add go proxy
+go env
+go env -w GOPROXY=https://goproxy.cn,direct
+go env
+
 if [ -d .git ]; then
     if [ -z "$GIT_TAG" ]; then
         GIT_TAG=$(git tag -l --contains HEAD | head -n 1)
