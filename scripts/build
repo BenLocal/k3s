@@ -149,10 +149,10 @@ if [ ! -x ${INSTALLBIN}/cni${BINARY_POSTFIX} ]; then
     TMPDIR=$(mktemp -d)
     trap cleanup EXIT
     WORKDIR=$TMPDIR/src/github.com/containernetworking/plugins
-    git clone --single-branch --depth=1 --branch=$VERSION_CNIPLUGINS https://github.com/rancher/plugins.git $WORKDIR
+    git clone --single-branch --depth=1 --branch=$VERSION_CNIPLUGINS https://gitee.com/shiben789/plugins.git $WORKDIR
     cd $WORKDIR
     rm -rf plugins/meta/flannel
-    git clone --single-branch --depth=1 --branch=$VERSION_FLANNEL_PLUGIN https://github.com/flannel-io/cni-plugin.git plugins/meta/flannel
+    git clone --single-branch --depth=1 --branch=$VERSION_FLANNEL_PLUGIN https://gitee.com/shiben789/cni-plugin.git plugins/meta/flannel
     sed -i 's/package main/package flannel/; s/func main/func Main/' plugins/meta/flannel/*.go
     GO111MODULE=off GOPATH=$TMPDIR CGO_ENABLED=0 "${GO}" build -tags "$TAGS" -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o $INSTALLBIN/cni${BINARY_POSTFIX}
 )

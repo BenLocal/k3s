@@ -6,7 +6,8 @@ cd $(dirname $0)/..
 
 . ./scripts/version.sh
 
-CHARTS_URL=https://k3s.io/k3s-charts/assets
+#CHARTS_URL=https://k3s.io/k3s-charts/assets
+CHARTS_URL=http://192.168.4.5:1234/k3s-charts/assets
 CHARTS_DIR=build/static/charts
 RUNC_DIR=build/src/github.com/opencontainers/runc
 CONTAINERD_DIR=build/src/github.com/containerd/containerd
@@ -24,8 +25,8 @@ mkdir -p ${DATA_DIR}
 
 case ${OS} in
   linux)
-    git clone --single-branch --branch=${VERSION_RUNC} --depth=1 https://github.com/k3s-io/runc ${RUNC_DIR}
-    curl --compressed -sfL https://github.com/k3s-io/k3s-root/releases/download/${VERSION_ROOT}/k3s-root-${ARCH}.tar | tar xf -
+    git clone --single-branch --branch=${VERSION_RUNC} --depth=1 https://gitee.com/shiben789/runc ${RUNC_DIR}
+    curl --compressed -sfL https://gh.api.99988866.xyz/https://github.com/k3s-io/k3s-root/releases/download/${VERSION_ROOT}/k3s-root-${ARCH}.tar | tar xf -
     ;;
   windows)
     git clone --single-branch --branch=${VERSION_HCSSHIM} --depth=1 https://github.com/microsoft/hcsshim ${HCSSHIM_DIR}
@@ -36,9 +37,12 @@ case ${OS} in
     ;;
 esac
 
-git clone --single-branch --branch=${VERSION_CONTAINERD} --depth=1 https://${PKG_CONTAINERD_K3S} ${CONTAINERD_DIR}
+git clone --single-branch --branch=${VERSION_CONTAINERD} --depth=1 https://gitee.com/shiben789/containerd ${CONTAINERD_DIR}
 
 for CHART_FILE in $(grep -rlF HelmChart manifests/ | xargs yq eval --no-doc .spec.chart | xargs -n1 basename); do
+  echo $CHART_FILE
   CHART_NAME=$(echo $CHART_FILE | grep -oE '^(-*[a-z])+')
-  curl -sfL ${CHARTS_URL}/${CHART_NAME}/${CHART_FILE} -o ${CHARTS_DIR}/${CHART_FILE}
+  if [ "$CHART_NAME" != "null" ]; then
+    curl -sfL ${CHARTS_URL}/${CHART_NAME}/${CHART_FILE} -o ${CHARTS_DIR}/${CHART_FILE}
+  fi
 done

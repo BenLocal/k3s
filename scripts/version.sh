@@ -8,6 +8,11 @@ GIT_TAG=$DRONE_TAG
 TREE_STATE=clean
 COMMIT=$DRONE_COMMIT
 
+# add go proxy
+go env
+go env -w GOPROXY=https://goproxy.cn,direct
+go env
+
 if [ -d .git ]; then
     if [ -z "$GIT_TAG" ]; then
         GIT_TAG=$(git tag -l --contains HEAD | head -n 1)
@@ -78,7 +83,8 @@ fi
 
 VERSION_ROOT="v0.14.0"
 
-DEPENDENCIES_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${VERSION_K8S}/build/dependencies.yaml"
+#DEPENDENCIES_URL="https://raw.githubusercontent.com/kubernetes/kubernetes/${VERSION_K8S}/build/dependencies.yaml"
+DEPENDENCIES_URL="https://gitee.com/mirrors/kubernetes/raw/${VERSION_K8S}/build/dependencies.yaml"
 VERSION_GOLANG="go"$(curl -sL "${DEPENDENCIES_URL}" | yq e '.dependencies[] | select(.name == "golang: upstream version").version' -)
 
 if [[ -n "$GIT_TAG" ]]; then

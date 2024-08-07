@@ -9,6 +9,9 @@ ENV http_proxy=${http_proxy} \
     https_proxy=${https_proxy} \
     no_proxy=${no_proxy}
 
+# change apk mirror
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
 # Install necessary packages
 RUN apk -U --no-cache add \
     bash git gcc musl-dev docker vim less file curl wget ca-certificates jq linux-headers \
@@ -19,7 +22,7 @@ RUN apk -U --no-cache add \
     && [ "$(go env GOARCH)" = "amd64" ] && apk -U --no-cache add mingw-w64-gcc || true
 
 # Install AWS CLI
-RUN PIPX_BIN_DIR=/usr/local/bin pipx install awscli
+RUN PIPX_BIN_DIR=/usr/local/bin pipx install awscli -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Install Trivy
 ENV TRIVY_VERSION="0.53.0"
@@ -30,22 +33,26 @@ RUN case "$(go env GOARCH)" in \
     *) TRIVY_ARCH="" ;; \
     esac
 RUN if [ -n "${TRIVY_ARCH}" ]; then \ 
-        wget --no-verbose "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-${TRIVY_ARCH}.tar.gz" \
-        && tar -zxvf "trivy_${TRIVY_VERSION}_Linux-${TRIVY_ARCH}.tar.gz" \
-        && mv trivy /usr/local/bin; \
+    wget --no-verbose "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-${TRIVY_ARCH}.tar.gz" \
+    && tar -zxvf "trivy_${TRIVY_VERSION}_Linux-${TRIVY_ARCH}.tar.gz" \
+    && mv trivy /usr/local/bin; \
     fi
 
 # Install goimports
-RUN GOPROXY=direct go install golang.org/x/tools/cmd/goimports@gopls/v0.11.0
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+# https://github.com/golang/go/issues/32955
+# RUN GOPROXY=direct go install golang.org/x/tools/cmd/goimports@gopls/v0.11.0
+RUN go install golang.org/x/tools/cmd/goimports@latest
 
 # Cleanup
 RUN rm -rf /go/src /go/pkg
 
 # Install golangci-lint for amd64
-RUN if [ "$(go env GOARCH)" = "amd64" ]; then \
-    curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
-    fi
-    
+#RUN if [ "$(go env GOARCH)" = "amd64" ]; then \
+#curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
+#   curl -sL https://gitee.com/mirrors/GolangCI-Lint/raw/master/install.sh | sh -s v1.55.2;  \
+#   fi
+
 # Set SELINUX environment variable
 ARG SELINUX=true
 ENV SELINUX=${SELINUX}
@@ -54,7 +61,7 @@ ENV SELINUX=${SELINUX}
 ENV DAPPER_RUN_ARGS="--privileged -v k3s-cache:/go/src/github.com/k3s-io/k3s/.cache -v trivy-cache:/root/.cache/trivy" \
     DAPPER_ENV="REPO TAG DRONE_TAG IMAGE_NAME SKIP_VALIDATE SKIP_IMAGE SKIP_AIRGAP AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID GITHUB_TOKEN GOLANG GOCOVER DEBUG" \
     DAPPER_SOURCE="/go/src/github.com/k3s-io/k3s/" \
-    DAPPER_OUTPUT="./bin ./dist ./build/out ./build/static ./pkg/static ./pkg/deploy" \
+    DAPPER_OUTPUT="./bin ./dist ./build/out ./build/static ./pkg/data ./pkg/static ./pkg/deploy" \
     DAPPER_DOCKER_SOCKET=true \
     CROSS=true \
     STATIC_BUILD=true

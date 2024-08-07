@@ -8,4 +8,5 @@ mkdir -p build/data
 GO=${GO-go}
 
 echo Running: "${GO}" generate
+${GO} env -w GOPROXY=https://goproxy.cn,direct
 "${GO}" generate

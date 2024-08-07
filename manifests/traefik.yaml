@@ -40,3 +40,11 @@ spec:
       effect: "NoSchedule"
     service:
       ipFamilyPolicy: "PreferDualStack"
+    ports:
+      rancher:
+        port: 9001
+        expose:
+          default: true
+        exposedPort: 9001
+        protocol: TCP
+
