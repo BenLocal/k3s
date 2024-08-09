@@ -48,10 +48,10 @@ RUN go install golang.org/x/tools/cmd/goimports@latest
 RUN rm -rf /go/src /go/pkg
 
 # Install golangci-lint for amd64
-RUN if [ "$(go env GOARCH)" = "amd64" ]; then \
-    #curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
-    curl -sL https://gitee.com/mirrors/GolangCI-Lint/blob/master/install.sh | sh -s v1.55.2;  \
-    fi
+#RUN if [ "$(go env GOARCH)" = "amd64" ]; then \
+#curl -sL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2;  \
+#   curl -sL https://gitee.com/mirrors/GolangCI-Lint/raw/master/install.sh | sh -s v1.55.2;  \
+#   fi
 
 # Set SELINUX environment variable
 ARG SELINUX=true
@@ -61,7 +61,7 @@ ENV SELINUX=${SELINUX}
 ENV DAPPER_RUN_ARGS="--privileged -v k3s-cache:/go/src/github.com/k3s-io/k3s/.cache -v trivy-cache:/root/.cache/trivy" \
     DAPPER_ENV="REPO TAG DRONE_TAG IMAGE_NAME SKIP_VALIDATE SKIP_IMAGE SKIP_AIRGAP AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID GITHUB_TOKEN GOLANG GOCOVER DEBUG" \
     DAPPER_SOURCE="/go/src/github.com/k3s-io/k3s/" \
-    DAPPER_OUTPUT="./bin ./dist ./build/out ./build/static ./pkg/static ./pkg/deploy" \
+    DAPPER_OUTPUT="./bin ./dist ./build/out ./build/static ./pkg/data ./pkg/static ./pkg/deploy" \
     DAPPER_DOCKER_SOCKET=true \
     CROSS=true \
     STATIC_BUILD=true
