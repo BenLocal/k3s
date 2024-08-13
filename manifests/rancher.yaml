@@ -11,13 +11,13 @@ metadata:
   namespace: cattle-system
 spec:
   chart: https://%{KUBERNETES_API}%/static/charts/rancher-2.8.5.tgz
-  set:
-    systemDefaultRegistry: "%{SYSTEM_DEFAULT_REGISTRY_RAW}%"
   valuesContent: |-
     tls: external
     replicas: 1
     rancherImage: rancher/rancher
     rancherImageTag: v2.8.5
+    rancherImagePullPolicy: Never
+    useBundledSystemChart: true
     ingress:
       extraAnnotations:
         traefik.ingress.kubernetes.io/router.entrypoints: rancher

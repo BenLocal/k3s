@@ -9,9 +9,7 @@ TREE_STATE=clean
 COMMIT=$DRONE_COMMIT
 
 # add go proxy
-go env
 go env -w GOPROXY=https://goproxy.cn,direct
-go env
 
 if [ -d .git ]; then
     if [ -z "$GIT_TAG" ]; then
