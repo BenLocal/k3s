@@ -12,3 +12,4 @@ docker.io/rancher/rancher-webhook:v0.4.7
 docker.io/rancher/fleet:v0.9.5
 docker.io/rancher/fleet-agent:v0.9.5
 docker.io/rancher/mirrored-cluster-api-controller:v1.4.4
+docker.io/rancher/kubectl:v1.20.2

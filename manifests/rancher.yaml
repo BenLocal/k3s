@@ -18,6 +18,11 @@ spec:
     rancherImageTag: v2.8.5
     rancherImagePullPolicy: Never
     useBundledSystemChart: true
+    extraEnv:
+    - name: CATTLE_TLS_MIN_VERSION
+      value: "1.2"
+    - name: CATTLE_FEATURES
+      value: "continuous-delivery=false"
     ingress:
       extraAnnotations:
         traefik.ingress.kubernetes.io/router.entrypoints: rancher
