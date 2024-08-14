@@ -1,4 +1,6 @@
 FROM alpine:3.20 as base
+# change apk mirror
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 RUN apk add -U ca-certificates zstd tzdata
 COPY build/out/data.tar.zst /
 RUN mkdir -p /image/etc/ssl/certs /image/run /image/var/run /image/tmp /image/lib/modules /image/lib/firmware && \
